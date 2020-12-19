@@ -50,7 +50,7 @@ __LexManos__: We've got code that has existed before the client and server were 
 
 __cpw__: Yes, yes we do. That's right, that was the first big thing we did. _(chuckles)_ Dealing with that client and server merge, that was a whole world of fun. So, yeah. <br>
 For the last, I'm-a say the last two years, I've been on a mission to try and clean up the mess. Originally, I'd hoped to target 1.12; that was a very, very naïve hope, which was a year ago by the way - 1.12 came out a year ago now. I was hoping to target 1.12 with this work, but there was no way it was ever going to be ready in time, so we deferred it. And 1.13 has taken a very long time to come out. As we all know, it's still not gonna be out, probably for another, another 2 or 3 weeks maybe? And so, we've taken this opportunity to redo a lot of how mods load. <br>
-Yes, yes it is Grum. Hey Grum, hello! _(laugh)_
+_[sees a message from Grum\_]_ Yes, yes it is Grum. Hey Grum, hello! _(laughs)_
 
 __LexManos__: Is that actually Grum, or is that some fake...
 
@@ -88,9 +88,9 @@ So, cpw has to comment on this, but as far as 1.13 is concerned, because we're u
 
 __cpw__: FML as well. So, FML is mostly rewritten, it's restructured- there's still a lot of common code, but a large amount of the methodology that FML uses to load mods has changed as we've gotten more and more-
 
-__LexManos__: Your mic's doing it again.
+__LexManos__: Your mic's doing it again. _[referring to buzzing from cpw's mic]_
 
-__cpw__: _Oh... [mic cuts out briefly] better?_ As we've got more and more understanding about how FML works and how people have been using it, building these giant modpacks, we've realized that one of the big problems is the way that FML loads mods. It's all single stream at the moment, and one mod goes after another all the way through, and if like you have 250 mods and each one takes 1 second to execute one of the events, we have 5 events that they can receive, that means that they take 5 seconds each to load; 250 times 5, that's 750 seconds, that's over 10 minutes. _(chuckles)_
+__cpw__: _Oh... [mic cuts out briefly, comes back clear] better?_ As we've got more and more understanding about how FML works and how people have been using it, building these giant modpacks, we've realized that one of the big problems is the way that FML loads mods. It's all single stream at the moment, and one mod goes after another all the way through, and if like you have 250 mods and each one takes 1 second to execute one of the events, we have 5 events that they can receive, that means that they take 5 seconds each to load; 250 times 5, that's 750 seconds, that's over 10 minutes. _(chuckles)_
 
 __LexManos__: One of the major complaints people have is just the load time, and there will never be a day Forge loads a thousand mods instantaneously-
 
@@ -101,4 +101,44 @@ __LexManos__: -because stuff needs [to be] actually processed, but we're working
 __cpw__: Yeah, a lot of it is technical debt that we carried over from ModLoader, which is annoying, but that's why- _["250 * 5 is not 750" from offbeathwitch]_ and yeah, you're right, it's not 750, it's 1250, so it's actually way worse than that, that's 20 minutes, isn't it? _(chuckles)_ You can blame ModLoader, ModLoader is from a different era. That's the reality of the situation. Modding was just different; people weren't building as many huge mods, they were the exception rather than the rule. _["a different eta... like 7+ years ago" from ohaiiChun]_ Yes, it was 7 years ago, iChun. <br>
 Anyway, so there is progress; there has a huge amount of progress. I'm confident that we can deliver something; it's gonna be a- gonna be a lot of work between now and "Wow, 1.13 is wonderful and stable and I love it!", but, yeah. I'm fairly certain it will probably be 1.14 before we really are at that point... but, yeah.
 
-**Last position of transcription: _22:05_**
+> **1.13 General**: Have you faced any difficulties with 1.13?
+
+__cpw__: "Any difficulties with 1.13?" Yeah, we've rewritten the entire modloading framework from the point that the launcher calls it all the way through to running the game, so yeah, that's quite a lot of difficulties. I know Lex has been doing a lot of work on the backend tooling as well, I think because we're very cognizant that Java 9, Java 10, Java 11 are all coming; they're all out, 9 and 10 are out there now, 11's due in 3 months time-
+
+__LexManos__: Mic. _[referring to buzzing from cpw's mic]_
+
+__cpw__: _[mic briefly cuts out, comes back clear]_ Sorry. _(chuckles briefly)_ 11's due in 3 months time, that just means we are gonna have a, y'know, we got to make sure that everything is able to deal with all of this. 11 may well have the first ground of Valhalla work, which we'll talk about a bit more later on, but y'know, there's a lot of big things coming in the pipeline and we've gotta... we've gotta try and deal with this now, so we're taking this now. _[deep breath]_ Okay.
+
+> **1.13 General**: Is there any progress towards Java 9 and 10 supprort? If so will it be compatible with Java 8? Will there be support for the Java Module system?
+
+__LexManos__: So there's one question, second from bottom of that section related to Java 9 and 10-
+
+__cpw__: Yeah.
+
+__LexManos__: So, we are a Minecraft modding system. We need to be compatible with what Minecraft is compatible with. So, we have to support whatever versions of Java that Minecraft supports. So for now, for the forseeable future, that's Java 8 and above. If you wanna have Forge designed and require Java 10 or Java 11 with the new Valhalla stuff, go yell at Mojang.
+
+__cpw__: Yep. So, I'm just going to expand on that a little bit. I don't know - Grum might want to chime in here in a second - so currently, what I've done, and one of the reasons, one of the strong motivators for why we rewrote this stuff, was that Java 9, Java 10 are out there, they break a lot of about what- is- how modding works in 1.12 today, so we had to rewrite it. Everything I have done, as far as I can tell, is compatible with Java 9 and 10. They are not yet compatible with the Module system. <br>
+That is a thing on my roadmap to support, that will be a fairly significant change when we do switch over to supporting it, 'cause I think there is every likelihood that mods will want to use the Module system to expose APIs and stuff like that, but unfortunately I have had to kill off a couple of features from FML to make sure that in Java 9 and Java 10 world, modding still works. <br>
+One of the key ones - and this is going to be an annoyance for a lot of people - is you can't all ship the same bloody packages anymore, 'cause that just does not work in Java 9 and 10, okay? So, I know that the tradition was - it's not really as much anymore - but, back in the old days y'know, every mod had it's copy of the RF library in it, for example. That just breaks horribly in Java 9 and up. So-
+
+__LexManos__: So-
+
+__cpw__: So we can't do that-
+
+> **Education and Communication** <br>
+> What can we do to further Educate about the following subjects: <br>
+> New or Improved Features, such as Jar in Jar dependencies
+> (**partial answer**)(?)
+
+__LexManos__: So, uh, a comment on that: if people have been paying attention to Forge, one of the major features that was just rolled out in the last couple updates-
+
+__cpw__: Yep.
+
+__LexManos__: -was a complete rewrite of the library management system - you know the whole jar-in-jar thing? So, from an end-user point of view, you can still ship the APIs and everything, it'll just be a single JAR download. You just gotta lay it out correctly and Forge will take care of the rest.
+
+__cpw__: _["The library managemend system is another question!" [sic] from JTK222]_ It is another question JTK, I know. We'll talk about that a little bit more a little bit later on, but that's gonna change a little bit for 1.13; I've got a couple of neat tricks that I can do with the new 1.13 stuff that we can't do in 1.12. <br>
+API stuff is gone, yeah. @Optional, API, both of those hacks are gone, they can't work in the new world, so I've just killed it. So, it's an annoyance but it's the reality, we have to be compatible with the future so I have to kill features that just can't work in it.
+
+__cpw__: ["Is that ASMData table still around? I do love magic annotations?" from modmuss50] ASMData table? Yes, it's still around, it's changed its name but it's still there, you can still do magic annotations. IMC's gonna get an overhaul as well. I'm gonna convert that to a pure supplier system, so no more "Oh, can you please support random objects and stuff?" Yeah, that's just gonna be gone; IMC's gonna be: "Here's a queue of people with suppliers. Call them all or whatever you want to do with them." _(chuckles)_ So, IMC's gonna be a lot more simple, but a lot more functional that it was today. So...
+
+**Last position of transcription: _27:27_**
