@@ -119,26 +119,44 @@ __LexManos__: So, we are a Minecraft modding system. We need to be compatible wi
 
 __cpw__: Yep. So, I'm just going to expand on that a little bit. I don't know - Grum might want to chime in here in a second - so currently, what I've done, and one of the reasons, one of the strong motivators for why we rewrote this stuff, was that Java 9, Java 10 are out there, they break a lot of about what- is- how modding works in 1.12 today, so we had to rewrite it. Everything I have done, as far as I can tell, is compatible with Java 9 and 10. They are not yet compatible with the Module system. <br>
 That is a thing on my roadmap to support, that will be a fairly significant change when we do switch over to supporting it, 'cause I think there is every likelihood that mods will want to use the Module system to expose APIs and stuff like that, but unfortunately I have had to kill off a couple of features from FML to make sure that in Java 9 and Java 10 world, modding still works. <br>
-One of the key ones - and this is going to be an annoyance for a lot of people - is you can't all ship the same bloody packages anymore, 'cause that just does not work in Java 9 and 10, okay? So, I know that the tradition was - it's not really as much anymore - but, back in the old days y'know, every mod had it's copy of the RF library in it, for example. That just breaks horribly in Java 9 and up. So-
-
-__LexManos__: So-
-
-__cpw__: So we can't do that-
+One of the key ones -- and this is going to be an annoyance for a lot of people -- is you can't all ship the same bloody packages anymore, 'cause that just does not work in Java 9 and 10, okay? So, I know that the tradition was -- it's not really as much anymore -- but, back in the old days y'know, every mod had it's copy of the RF library in it, for example. That just breaks horribly in Java 9 and up. So we can't do that.
 
 > **Education and Communication** <br>
 > What can we do to further Educate about the following subjects: <br>
 > New or Improved Features, such as Jar in Jar dependencies
 > (**partial answer**)(?)
 
-__LexManos__: So, uh, a comment on that: if people have been paying attention to Forge, one of the major features that was just rolled out in the last couple updates-
-
-__cpw__: Yep.
-
-__LexManos__: -was a complete rewrite of the library management system - you know the whole jar-in-jar thing? So, from an end-user point of view, you can still ship the APIs and everything, it'll just be a single JAR download. You just gotta lay it out correctly and Forge will take care of the rest.
+__LexManos__: So, uh, a comment on that: if people have been paying attention to Forge, one of the major features that was just rolled out in the last couple updates was a complete rewrite of the library management system - you know the whole jar-in-jar thing? So, from an end-user point of view, you can still ship the APIs and everything, it'll just be a single JAR download. You just gotta lay it out correctly and Forge will take care of the rest.
 
 __cpw__: _["The library managemend system is another question!" [sic] from JTK222]_ It is another question JTK, I know. We'll talk about that a little bit more a little bit later on, but that's gonna change a little bit for 1.13; I've got a couple of neat tricks that I can do with the new 1.13 stuff that we can't do in 1.12. <br>
 API stuff is gone, yeah. @Optional, API, both of those hacks are gone, they can't work in the new world, so I've just killed it. So, it's an annoyance but it's the reality, we have to be compatible with the future so I have to kill features that just can't work in it.
 
-__cpw__: ["Is that ASMData table still around? I do love magic annotations?" from modmuss50] ASMData table? Yes, it's still around, it's changed its name but it's still there, you can still do magic annotations. IMC's gonna get an overhaul as well. I'm gonna convert that to a pure supplier system, so no more "Oh, can you please support random objects and stuff?" Yeah, that's just gonna be gone; IMC's gonna be: "Here's a queue of people with suppliers. Call them all or whatever you want to do with them." _(chuckles)_ So, IMC's gonna be a lot more simple, but a lot more functional that it was today. So...
+__cpw__: _["Is that ASMData table still around? I do love magic annotations?" from modmuss50]_ ASMData table? Yes, it's still around, it's changed its name but it's still there, you can still do magic annotations. IMC's gonna get an overhaul as well. I'm gonna convert that to a pure supplier system, so no more "Oh, can you please support random objects and stuff?" Yeah, that's just gonna be gone; IMC's gonna be: "Here's a queue of people with suppliers. Call them all or whatever you want to do with them." _(chuckles)_ So, IMC's gonna be a lot more simple, but a lot more functional that it was today. So...
 
-**Last position of transcription: _27:27_**
+__cpw__: _["So if nothing else changes, Ender Io would suddently have dependencies on about 30 mods..." from HenryLoenwind]_ Yes and no, Henry. You've gotta realize the difference between- _["re Optional" from HenryLoenwind]_ -yeah I know @Optional is gonna be a pain in the neck to deal with. But, we have to kill it, it doesn't work. When you go into Java 9, it is just broken. It is just gonna completely break, and we know Java 9 is gonna land soon.
+
+__LexManos__: So, in all actuality, if those 30 mods used the capability system, used our event busses, use the features that Forge provides, then it can all always be soft dependencies. There should be no reason that you have to have a hard dependency on an optional mod.
+
+__cpw__: Yep, so dependencies themselves are gonna change a little bit with 1.13 as well because- I'll talk about that a little bit later on. Let's just start pushing through some of these questions quickly, 'cause we've sort of talked through them.
+
+> **1.13 General**: ETA on 1.13 Stable Forge?
+
+__cpw__: "An ETA on Stable?" _(chuckles)_ We'll let you know when we've got any idea, I think.
+
+__LexManos__: So basic roadmap -- you can't hold me to this because things will change -- is within a week or two of 1.13 officially dropping, I would like to have a compilable version of Forge, which is just the modloader and boots into Minecraft. But the plan is to completely audit every single hook and every single feature of Forge to see if it's even needed anymore, and if it is, rewrite it in a better way. So, we're talking months here. Just to be flat out honest, we're talking months for it to be back up and running full-bore.
+
+__cpw__: _["Is this the despacito2 announcement stream?" from GamingDeeDoubleYous]_ _(chuckles)_ No, this isn't the Despacito 2 announcement stream. So, okay...
+
+> **1.13 General**: Do you expect this to be the last big rewrite forge will ever need?
+
+__cpw__: I hope so. Uh, I hope that, I really hope that this is it. I've tried-
+
+__???__: Here's to seven more years though.
+
+__cpw__: _(chuckles)_ I agree.
+
+__LexManos__: Honestly, if we can get another seven years out of this rewrite, and then we need another one because Java has changed so fricking much, I'm okay with that.
+
+__cpw__: I'm pretty sure Java's not going to change that much. The only big thing that's likely to change us significantly from now on out is Valhalla, because value types are gonna change a fair bit about how stuff works -- for the good, I mean they're not gonna be a bad thing. But that shouldn't require a rewrite of how Forge loads. Modules? When we adopt module system stuff, that's gonna change how mods load because APIs and stuff will be available then again, and you know there might be things like multi-version JARs that we can support and other tricks like that. We'll see -- I've got to do a real sanity check on that, I haven't focused on that yet.
+
+**Last position of transcription: _30:48_**
